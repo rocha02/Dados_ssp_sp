@@ -1,35 +1,78 @@
 ---
+title: "Análise dos dados de criminalidade da Secretaria da Segurança Pública de São Paulo (SSP/SP) - 2002 a 2020"
+author: "Rafael Rocha"
+Date: "13/09/2020"
 output: github_document
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
+library(usethis)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(knitr)
+
+mun_ano_crime_pop <- readRDS("mun_ano_crime_pop.rds")
+mun_ano_crime_tax <- readRDS("mun_ano_crime_tax.rds")
+macrorregiao <- readRDS("macrorregiao.rds")
 ```
 
-# Dados_ssp_sp
+# Série histórica dos principais índices criminais - 2002 a 2019
 
-<!-- badges: start -->
-<!-- badges: end -->
+```{r, warning = FALSE, fig.cap="Figura 1. Série histórica dos homicídios.", echo = FALSE}
+macrorregiao  %>%
+  ggplot(aes(x = ano, y = hom_doloso, group = macroregiao, color = macroregiao)) +
+  geom_line()+
+  geom_point(aes(x = ano, y = hom_doloso, group = macroregiao, color = macroregiao)) + 
+  scale_x_continuous(breaks = seq(2002, 2019, 3)) +
+  labs(
+    x = "Ano",
+    y = "Homicídios Dolosos",
+    color = "Macrorregião",
+    title = "Série histórica das ocorrências de homicídio doloso em São Paulo",
+    subtitle = "Por macrorregiões - 2002 a 2019"
+  ) +
+  theme_minimal()
+
+```
+
 
 The goal of Dados_ssp_sp is to ...
 
 What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
 
-```{r cars}
-summary(cars)
+```{r, include=FALSE}
+
 ```
 
 You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date.
 
 You can also embed plots, for example:
 
-```{r pressure, echo = FALSE}
-plot(pressure)
+
+```{r, echo = FALSE}
+mun_ano_crime_tax %>%
+  arrange(desc(hom_doloso)) %>%
+  select(`Município` = municipio_nome, "Ano" = ano, "População" = populacao, 
+         "Taxa de Homicídio Doloso" = hom_doloso) %>%
+    head(n = 15L) %>% 
+  knitr::kable(format = "simple", digits = 2,  caption = "Maiores taxas de homicídios registradas entre 2002 e 2020") 
 ```
 
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub!
+Como é possível perceber, a tabela acima, com as maiores taxas de homicídio doloso por 100 mil habitantes registradas no período entre 2002 e 2020 é composta somente por pequenos municípios com populações inferiores a 3 mil habitantes. São cidades, que por serem tão pequenas, ao registraram 1 ou 2 homicídios anuais são imediatamente catapultadas para taxas mais elevadas que a de países mais violentos do mundo.
+
+Justamente por isso não se recomenda, que o cálculo de taxas não seja feito em populações inferiores a 100 mil habitantes. Assim, para os cálcuulos de taxas a seguir, vamos filtrar apenas aqueles com população igual ou maior a 100 mil habitantes no referido ano. 
+
+```{r, echo = FALSE}
+mun_ano_crime_tax %>%
+  filter(populacao > 100000) %>% 
+  arrange(desc(hom_doloso)) %>%
+  select(`Município` = municipio_nome, "Ano" = ano, "Macrorregião" = macroregiao, "População" = populacao, 
+         "Taxa de Homicídio Doloso" = hom_doloso) %>%
+    head(n = 20L) %>% 
+  knitr::kable(format = "simple", digits = 2,  caption = "Maiores taxas de homicídios registradas entre 2002 e 2020") 
+
+```
+
