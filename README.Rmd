@@ -1,35 +1,147 @@
 ---
+title: "Análise dos dados de criminalidade da Secretaria da Segurança Pública de São Paulo (SSP/SP) - 2002 a 2020"
+author: "Rafael Rocha"
+Date: "13/09/2020"
 output: github_document
 ---
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
+<style>
+body {
+text-align: justify}
+</style>
+
+### Objetivo
+
+O presente relatório tem como objetivo apresentar uma análise preliminar do banco de dados de índices criminais da Secretaria da Segurança Pública do estado de São Paulo (SSP/SP). Este banco é composto pelo número de ocorrências mensais de diversos crimes no período de 2002 a abril de 2020, no nível de delegacia para todos os 645 municípios do estado de São Paulo. 
 
 ```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
+library(usethis)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(knitr)
+library(sf)
+library(geobr)
+
+mun_ano_crime_pop <- readRDS("mun_ano_crime_pop.rds")
+mun_ano_crime_tax <- readRDS("mun_ano_crime_tax.rds")
+macrorregiao <- readRDS("macrorregiao.rds")
 ```
 
-# Dados_ssp_sp
+#### Série histórica dos principais índices criminais - 2002 a 2019
 
-<!-- badges: start -->
-<!-- badges: end -->
+Uma primeira análise é a da série histórica dos principais índices criminais no período de 18 anos entre 2002 e 2019. Como os dados foram calculados por meio da agregação anual, os dados referentes aos quatro primeiros meses de 2020 não foram utilizados nas análises a seguir. 
 
-The goal of Dados_ssp_sp is to ...
+Tendo em vista o grande número de municípios no estado de São Paulo, nesta primeira análise optamos por agregar as 645 cidades paulistas de acordo com sua macrorregião, ou seja, Interior, Grande São Paulo e Capital. Foram escolhidos quatro tipos de crimes violentos, ou seja, nos quais existe a ameaça ou uso da força: os homicídios dolosos, estupros (totais), roubos (totais) e roubos (veículos).
 
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
+```{r, warning = FALSE, fig.cap="Figura 1. Série histórica dos homicídios.", echo = FALSE}
+macrorregiao  %>%
+  ggplot(aes(x = ano, y = hom_doloso, group = macroregiao, color = macroregiao)) +
+  geom_line()+
+  geom_point(aes(x = ano, y = hom_doloso, group = macroregiao, color = macroregiao)) + 
+  scale_x_continuous(breaks = seq(2002, 2019, 3)) +
+  labs(
+    x = "Ano",
+    y = "Homicídios Dolosos",
+    color = "Macrorregião",
+    title = "Série histórica das ocorrências de homicídio doloso em São Paulo",
+    subtitle = "Por macrorregiões - 2002 a 2019"
+  ) +
+  theme_minimal()
 
-```{r cars}
-summary(cars)
 ```
 
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date.
+Nas últimas duas décadas o estado de São Paulo apresentou uma redução intensa dos homicídios dolosos. Como ilustração, no ano de 2002 o estado registrou uma taxa de 33 homicídios dolosos por 100 mil habitantes, enquanto em 2019 esta taxa chegou a seu patamar mais baixo desde o início da série histórica pela SSP/SP - 6,5 homicídios dolosos por 100 mil.
 
-You can also embed plots, for example:
+É importante destacar que esta queda não se deu de maneira uniforme nas três macrorregiões do estado. Enquanto a Capital e os municípios da Grande São Paulo tiveram uma redução mais intensa, os municípios do interior, especialmente a partir de 2008, tiveram uma evolução marcada por certa estabilidade pontuada por elevações e reduções de menor intensidade. Desde o ano de 2004, a capital paulista deixou de ser a macrorregião com maior número de ocorrências de homicídio doloso, posição que é ocupada desde então pelos municípios do Interior.
 
-```{r pressure, echo = FALSE}
-plot(pressure)
+```{r, warning = FALSE, fig.cap="Figura 2. Série histórica dos estupros.", echo = FALSE}
+macrorregiao  %>%
+  ggplot(aes(x = ano, y = estupro_total, group = macroregiao, color = macroregiao)) +
+  geom_line()+
+  geom_point(aes(x = ano, y = estupro_total, group = macroregiao, color = macroregiao)) + 
+  scale_x_continuous(breaks = seq(2002, 2019, 3)) +
+  labs(
+    x = "Ano",
+    y = "Total de estupros",
+    color = "Macrorregião",
+    title = "Série histórica das ocorrências de estupro em São Paulo",
+    subtitle = "Por macrorregiões - 2002 a 2019"
+  ) +
+  theme_minimal()
 ```
 
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub!
+Por sua vez, as ocorrências de estupro total - ou seja, a soma dos estupros com os estupros de vulneráveis -, tiveram uma trajetória oposta à dos homicídios dolosos no intervalo entre 2002 e 2019. As séries históricas das macrorregiões se mantiveram relativamente estáveis até o ano de 2008, quando houve um forte aumento das ocorrências de estupro, sobretudo nos municípios do interior, que passaram de cerca de 1800 ocorrências nos municípios do interior em 2008 para mais de 7 mil ocorrências de estupro no ano de 2012 neste mesmos municípios.
+
+Alguns estudos apontam que esse forte aumento dos registros de estupros no final dos anos 2000 se deve, ao menos em parte pela intensa divulgação de campanhas para denunciar esse tipo de crime, associada ao maior conhecimento da Lei Maria da Penha (de 2006), que pune de forma mais severa agressões a mulheres, e à disseminação de delegacias especializadas, contribuíram para que os casos abusos fossem relatados. Ainda assim, a tendência de crescimento dos registros de estupros se mantém no estado uma década depois destes marcos, ainda que de forma mais lenta.
+
+```{r, warning = FALSE, fig.cap="Figura 3. Série histórica dos roubos (total).", echo = FALSE}
+macrorregiao  %>%
+  ggplot(aes(x = ano, y = roubo_total, group = macroregiao, color = macroregiao)) +
+  geom_line()+
+  geom_point(aes(x = ano, y = roubo_total, group = macroregiao, color = macroregiao)) + 
+  scale_x_continuous(breaks = seq(2002, 2019, 3)) +
+  labs(
+    x = "Ano",
+    y = "Total de roubos",
+    color = "Macrorregião",
+    title = "Série histórica das ocorrências de roubo em São Paulo",
+    subtitle = "Por macrorregiões - 2002 a 2019"
+  ) +
+  theme_minimal()
+```
+
+Entre os anos de 2002 e 2019, o volume de roubos, ou seja, englobando todas as modalidades, como de veículo, de carga, e demais, se concentrou na capital paulista, seguida dos municípios do interior até o ano de 2018, quando o volume anual de roubos das cidades da Grande São Paulo superou o das cidades do Interior. É possível identificar um aumento do total de roubos de 2002 até 2009, com uma certa estabilização até 2013, quando se inicia um aumento que vai culminar no pico de ocorrências de roubo de 2014, maior registrado pela série histórica nas três macrorregiões. 
+
+Após 2014, tanto nos municípios do interior como na capital se inicial uma tendência de queda, que no entanto começou nos municípios da Grande São Paulo somente em 2016, e que se manteve até 2019, exceto na capital paulista, cujas ocorrências de roubos voltaram a aumentar no último ano da série histórica.  
+
+```{r, warning = FALSE, fig.cap="Figura 3. Série histórica dos roubos (veículos).", echo = FALSE}
+macrorregiao  %>%
+  ggplot(aes(x = ano, y = roubo_veiculo, group = macroregiao, color = macroregiao)) +
+  geom_line()+
+  geom_point(aes(x = ano, y = roubo_veiculo, group = macroregiao, color = macroregiao)) + 
+  scale_x_continuous(breaks = seq(2002, 2019, 3)) +
+  labs(
+    x = "Ano",
+    y = "Total de roubos",
+    color = "Macrorregião",
+    title = "Série histórica das ocorrências de roubo de veículos em São Paulo",
+    subtitle = "Por macrorregiões - 2002 a 2019"
+  ) +
+  theme_minimal()
+
+```
+A análise especificamente da modalidade de roubo de veículos aponta que, novamente, durante todo o período analisado, o maior volume das ocorrências de roubo de veículos se concentrou na capital paulista, seguido pelos municípios da Grande São Paulo, e finalmente, os municípios do Interior. De forma geral, as três macrorregiões seguiram tendências semelhantes, ainda que o voluma dos roubos de veiculos na capital tenha saído sempre mais elevado: um período de queda das ocorrências de roubos entre 2002 e 2008, seguindo de um momento de aumento até o ano de 2014, no qual se atinge o pico dos roubos na série histórica para as três macrorregiões, e finalmente, uma forte redução entre os anos de 2015 e 2019.
+
+#### Taxas dos principais índices criminais por município - 2002 a 2019
+
+sdgfsdffdsafsdgdfgdsfsdffdghdgdsffdsf
+sdgfsdffdsafsdgdfgdsfsdffdghdgdsffdsfsdgfsdffdsafsdgdfgdsfsdffdghdgdsffdsf
+sdgfsdffdsafsdgdfgdsfsdffdghdgdsffdsfsdgfsdffdsafsdgdfgdsfsdffdghdgdsffdsf
+sdgfsdffdsafsdgdfgdsfsdffdghdgdsffdsfsdgfsdffdsafsdgdfgdsfsdffdghdgdsffdsf
+sdgfsdffdsafsdgdfgdsfsdffdghdgdsffdsf
+
+```{r, echo = FALSE}
+mun_ano_crime_tax %>%
+  arrange(desc(hom_doloso)) %>%
+  select(`Município` = municipio_nome, "Ano" = ano, "População" = populacao, 
+         "Taxa de Homicídio Doloso" = hom_doloso) %>%
+    head(n = 15L) %>% 
+  knitr::kable(format = "simple", digits = 2,  caption = "Maiores taxas de homicídios registradas entre 2002 e 2020") 
+```
+
+Como é possível perceber, a tabela acima, com as maiores taxas de homicídio doloso por 100 mil habitantes registradas no período entre 2002 e 2020 é composta somente por pequenos municípios com populações inferiores a 3 mil habitantes. São cidades, que por serem tão pequenas, ao registraram 1 ou 2 homicídios anuais são imediatamente catapultadas para taxas mais elevadas que a de países mais violentos do mundo.
+
+Justamente por isso não se recomenda, que o cálculo de taxas não seja feito em populações inferiores a 100 mil habitantes. Assim, para os cálcuulos de taxas a seguir, vamos filtrar apenas aqueles com população igual ou maior a 100 mil habitantes no referido ano. 
+
+```{r, echo = FALSE}
+mun_ano_crime_tax %>%
+  filter(populacao > 100000) %>% 
+  arrange(desc(hom_doloso)) %>%
+  select(`Município` = municipio_nome, "Ano" = ano, "Macrorregião" = macroregiao, "População" = populacao,
+         "Taxa de Homicídio Doloso" = hom_doloso) %>%
+    head(n = 20L) %>% 
+  knitr::kable(format = "simple", digits = 2,  caption = "Maiores taxas de homicídios registradas entre 2002 e 2020") 
+
+```
+
