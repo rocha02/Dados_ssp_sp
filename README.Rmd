@@ -22,7 +22,6 @@ library(ggplot2)
 library(knitr)
 library(sf)
 library(geobr)
-
 mun_ano_crime_pop <- readRDS("mun_ano_crime_pop.rds")
 mun_ano_crime_tax <- readRDS("mun_ano_crime_tax.rds")
 macrorregiao <- readRDS("macrorregiao.rds")
@@ -48,7 +47,6 @@ macrorregiao  %>%
     subtitle = "Por macrorregiões - 2002 a 2019"
   ) +
   theme_minimal()
-
 ```
 
 Nas últimas duas décadas o estado de São Paulo apresentou uma redução intensa dos homicídios dolosos. Como ilustração, no ano de 2002 o estado registrou uma taxa de 33 homicídios dolosos por 100 mil habitantes, enquanto em 2019 esta taxa chegou a seu patamar mais baixo desde o início da série histórica pela SSP/SP - 6,5 homicídios dolosos por 100 mil.
@@ -109,17 +107,19 @@ macrorregiao  %>%
     subtitle = "Por macrorregiões - 2002 a 2019"
   ) +
   theme_minimal()
-
 ```
+
 A análise especificamente da modalidade de roubo de veículos aponta que, novamente, durante todo o período analisado, o maior volume das ocorrências de roubo de veículos se concentrou na capital paulista, seguido pelos municípios da Grande São Paulo, e finalmente, os municípios do Interior. De forma geral, as três macrorregiões seguiram tendências semelhantes, ainda que o voluma dos roubos de veiculos na capital tenha saído sempre mais elevado: um período de queda das ocorrências de roubos entre 2002 e 2008, seguindo de um momento de aumento até o ano de 2014, no qual se atinge o pico dos roubos na série histórica para as três macrorregiões, e finalmente, uma forte redução entre os anos de 2015 e 2019.
 
 #### Taxas dos principais índices criminais por município - 2002 a 2019
 
-sdgfsdffdsafsdgdfgdsfsdffdghdgdsffdsf
-sdgfsdffdsafsdgdfgdsfsdffdghdgdsffdsfsdgfsdffdsafsdgdfgdsfsdffdghdgdsffdsf
-sdgfsdffdsafsdgdfgdsfsdffdghdgdsffdsfsdgfsdffdsafsdgdfgdsfsdffdghdgdsffdsf
-sdgfsdffdsafsdgdfgdsfsdffdghdgdsffdsfsdgfsdffdsafsdgdfgdsfsdffdghdgdsffdsf
-sdgfsdffdsafsdgdfgdsfsdffdghdgdsffdsf
+As séries históricas apresentam uma perspectiva mais geral acerca do comportamento dos principais indicadores criminais nas macrorregiões do estado no período entre 2002 e 2019. No entanto, a base original da SSP/SP possui os dados desses indicadores criminais por município, e portanto, passíveis de comparação entre eles.
+
+No entanto, os municípios de São Paulo variam em tamanho e população, entre 838 habitantes e 12 milhões, de forma que uma simples lista comparativa evidentemente vai apresentar apenas os municípios com centenas de milhares de habitantes, e logo, volume mais elevado de crime. Dessa forma, utilizamos uma base com a população dos 645 municípios do estado nos anos de 2002 e 2019 e a mesclamos na base da SSP/SP, em uma ação de pivotagem e posteriormente junção das bases, que permitiu o cálculo da taxa dos indicadores criminais de cada município por 100 mil habitantes. 
+
+Foram selecionados para a análise os crimes de homicídio doloso, estupro (total), roubo (total).
+
+##### 20 maiores taxas de homicídio doloso por município - 2002 a 2019
 
 ```{r, echo = FALSE}
 mun_ano_crime_tax %>%
@@ -127,12 +127,12 @@ mun_ano_crime_tax %>%
   select(`Município` = municipio_nome, "Ano" = ano, "População" = populacao, 
          "Taxa de Homicídio Doloso" = hom_doloso) %>%
     head(n = 15L) %>% 
-  knitr::kable(format = "simple", digits = 2,  caption = "Maiores taxas de homicídios registradas entre 2002 e 2020") 
+  knitr::kable(format = "simple", digits = 2) 
 ```
 
 Como é possível perceber, a tabela acima, com as maiores taxas de homicídio doloso por 100 mil habitantes registradas no período entre 2002 e 2020 é composta somente por pequenos municípios com populações inferiores a 3 mil habitantes. São cidades, que por serem tão pequenas, ao registraram 1 ou 2 homicídios anuais são imediatamente catapultadas para taxas mais elevadas que a de países mais violentos do mundo.
 
-Justamente por isso não se recomenda, que o cálculo de taxas não seja feito em populações inferiores a 100 mil habitantes. Assim, para os cálcuulos de taxas a seguir, vamos filtrar apenas aqueles com população igual ou maior a 100 mil habitantes no referido ano. 
+Justamente por isso não se recomenda, que o cálculo de taxas não seja feito em populações inferiores a 100 mil habitantes. Assim, para os cálculos de taxas a seguir, vamos filtrar apenas aqueles com população igual ou maior a 100 mil habitantes no referido ano.
 
 ```{r, echo = FALSE}
 mun_ano_crime_tax %>%
@@ -141,7 +141,43 @@ mun_ano_crime_tax %>%
   select(`Município` = municipio_nome, "Ano" = ano, "Macrorregião" = macroregiao, "População" = populacao,
          "Taxa de Homicídio Doloso" = hom_doloso) %>%
     head(n = 20L) %>% 
-  knitr::kable(format = "simple", digits = 2,  caption = "Maiores taxas de homicídios registradas entre 2002 e 2020") 
-
+  knitr::kable(format = "simple", digits = 2) 
 ```
 
+A partir da análise apenas dos 79 municípios com mais de 100 mil habitantes, é possível perceber que a lista das 20 maiores taxas de homicídios é dividida entre municípios da Grande São Paulo e do Interior, e se concentra nos anos 2002 e 2003, que como vimos anteriormente, foram os anos iniciais da forte queda nos homicídios dolosos do estado de São Paulo. No ano de 2002 os três municípios com taxas de homicídio mais elevadas - Cubatão, Praia Grande e Itaquaquecetuba, tinham taxas de homicídio duas vezes mais elevadas que a do estado naquele ano, 33 homicídios dolosos por 100 mil habitantes.
+
+##### 20 maiores taxas de estupro por município - 2002 a 2019
+
+```{r, echo = FALSE}
+mun_ano_crime_tax %>%
+  filter(populacao > 100000) %>% 
+  arrange(desc(estupro_total)) %>%
+  select(`Município` = municipio_nome, "Ano" = ano, "Macrorregião" = macroregiao, "População" = populacao,
+         "Taxa de estupro total" = estupro_total) %>%
+    head(n = 20L) %>% 
+  knitr::kable(format = "simple", digits = 2) 
+```
+
+Enquanto as 20 maiores taxas de homicídio doloso registradas por muunicípios se concentram nos anos de 2002 e 2003 , no casos das taxas de estuupros por 100 mil habitantes essa concentração não é tão forte, já que são listadas taxas registradas entre 2011 e 2019. Também é imporante destacar que, com a exceção do município de Francisco Morato no ano de 2011, todas as 20 maiores taxas de estupro por 100 mil habitantes no período foram registradas no interior do estado, de forma condizente com os dados da série histórica apresentada anteriormente. O município de Caraguatatuba se destaca não somente com a maior taxa de estupro registrada na série histórica em 2019, mas por aparecer 4 vezes na lista, assim como Barretos.
+
+##### 20 maiores taxas de roubo total por município - 2002 a 2019
+
+```{r, echo = FALSE}
+mun_ano_crime_tax %>%
+  filter(populacao > 100000) %>% 
+  arrange(desc(roubo_total)) %>%
+  select(`Município` = municipio_nome, "Ano" = ano, "Macrorregião" = macroregiao, "População" = populacao,
+         "Taxa de roubo total" = roubo_total) %>%
+    head(n = 20L) %>% 
+  knitr::kable(format = "simple", digits = 2) 
+```
+
+A lista com as 20 maiores taxas de roubos (total) por 100 mil habitantes é a menos diversa dentre as apresentadas até então: 5 municípios ocupam as 20 posições, sendo que apenas Diadema e Praia Grande são responsáveis por 14 das 20 maiores taxas de roubo registradas no período. Das 20 posições, 8 são ocupadas por municípios da região metropolitana de São Paulo, 9 por municípios do interior, e as outras 3 pela cidade de São Paulo. Além de ocupar o topo da tabela, o município de Diadema nos últimos 6 anos teve a pior taxa de roubos do Estado.
+
+### Conclusão
+
+Esta análise preliminar dos dados de criminalidade da Secretaria da Segurança Pública de São Paulo (SSP/SP) das últimas duas décadas apresenta um vasto potencial para mensuração e orientação das políticas de segurança pública no estado. 
+
+A análise evidencia como os distintos fenômenos criminais possuem comportamentos diversos, e que quando falamos de segurança pública, é necessário, no mínimo, prestarmos atenção isoladamente para os crimes contra a vida, contra a propriedade e crimes sexuais. 
+
+Por sua vez, a análise preliminar das maiores taxas dos crimes selecionados aponta para uma repetição dos mesmos municípios durante a série histórica, sobretudo no caso dos roubos. São justamente essas localidades que deveriam receber um maior investimento em suas políticas de segurança municipais, mas também serem priorizadas pelo governo de São Paulo como forma de reduzir significativamente os indicadores criminais do estado, sobretudo no caso dos crimes de estupro, que praticamente duplicaram na última década e seguem em tendência de crescimento.
