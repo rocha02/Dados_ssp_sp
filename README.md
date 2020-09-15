@@ -92,8 +92,9 @@ paulista, cujas ocorrências de roubos voltaram a aumentar no último ano
 da série histórica.
 
 ![Figura 3. Série histórica dos roubos
-(veículos).](README_files/figure-gfm/unnamed-chunk-5-1.png) A análise
-especificamente da modalidade de roubo de veículos aponta que,
+(veículos).](README_files/figure-gfm/unnamed-chunk-5-1.png)
+
+A análise especificamente da modalidade de roubo de veículos aponta que,
 novamente, durante todo o período analisado, o maior volume das
 ocorrências de roubo de veículos se concentrou na capital paulista,
 seguido pelos municípios da Grande São Paulo, e finalmente, os
@@ -264,7 +265,22 @@ Paulo. Além de ocupar o topo da tabela, o município de Diadema nos
 
 ### Conclusão
 
-O presente relatório tem como objetivo apresentar uma análise preliminar
-do banco de dados de índices criminais da Secretaria da Segurança
-Pública do estado de São Paulo (SSP/SP). Este banco é composto pelo
-número de ocorrências mensais de diversos crimes no p
+Esta análise preliminar dos dados de criminalidade da Secretaria da
+Segurança Pública de São Paulo (SSP/SP) das últimas duas décadas
+apresenta um vasto potencial para mensuração e orientação das políticas
+de segurança pública no estado.
+
+A análise evidencia como os distintos fenômenos criminais possuem
+comportamentos diversos, e que quando falamos de segurança pública, é
+necessário, no mínimo, prestarmos atenção isoladamente para os crimes
+contra a vida, contra a propriedade e crimes sexuais.
+
+Por sua vez, a análise preliminar das maiores taxas dos crimes
+selecionados aponta para uma repetição dos mesmos municípios durante a
+série histórica, sobretudo no caso dos roubos. São justamente essas
+localidades que deveriam receber um maior investimento em suas políticas
+de segurança municipais, mas também serem priorizadas pelo governo de
+São Paulo como forma de reduzir significativamente os indicadores
+criminais do estado, sobretudo no caso dos crimes de estupro, que
+praticamente duplicaram na última década e seguem em tendência de
+crescimento.

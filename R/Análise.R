@@ -68,8 +68,6 @@ macrorregiao  %>%
   ) +
   theme_minimal()
 
-
-
 ## Pivotar base de população anual dos municípios
 
 pop_mun <- pop_mun %>%
@@ -106,7 +104,6 @@ mun_ano_crime_tax <- mun_ano_crime_pop %>%
 mun_ano_crime_tax %>%
   arrange(desc(hom_doloso)) %>%
   View()
-
 
 ## Criar mapa de ocorrências
 
