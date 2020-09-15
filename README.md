@@ -3,11 +3,6 @@ São Paulo (SSP/SP) - 2002 a 2020
 ================
 Rafael Rocha
 
-<style>
-body {
-text-align: justify}
-</style>
-
 ### Objetivo
 
 O presente relatório tem como objetivo apresentar uma análise preliminar
